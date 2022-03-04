@@ -16,6 +16,7 @@ import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
 import androidx.biometric.BiometricPrompt
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.Lifecycle
 import com.squareup.moshi.JsonClass
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -64,6 +65,9 @@ enum class AuthenticationError(val code: Int) {
     Canceled(BiometricPrompt.ERROR_CANCELED),
     Timeout(BiometricPrompt.ERROR_TIMEOUT),
     UserCanceled(BiometricPrompt.ERROR_USER_CANCELED),
+    Lockout(BiometricPrompt.ERROR_LOCKOUT),
+    LockoutPermanent(BiometricPrompt.ERROR_LOCKOUT_PERMANENT),
+
     Unknown(-1),
 
     /** Authentication valid, but unknown */
