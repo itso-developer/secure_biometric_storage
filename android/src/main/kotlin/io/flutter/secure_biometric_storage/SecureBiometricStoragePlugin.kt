@@ -372,7 +372,7 @@ class SecureBiometricStoragePlugin : FlutterPlugin, ActivityAware, MethodCallHan
 
         // checking lifecycle state, see: https://stackoverflow.com/questions/56358422/java-lang-illegalstateexception-error-in-biometricprompt-authenticate
         val lifecycleState = activity.lifecycle.currentState
-        if (lifecycleState != Lifecycle.State.RESUMED) {
+        if (lifecycleState != Lifecycle.State.RESUMED) return run{
             logger.error { "Wrong lifecycle state" }
             onError(
                     AuthenticationErrorInfo(
