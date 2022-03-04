@@ -1,10 +1,17 @@
-## 0.1.0 - Initial release
+## 0.2.1
 
-* iOS Support and Android Support.
+* added lifecycleState check in Android
+* added lockout and lockoutPermanent error types
 
-## 0.2.0 
+
+## 0.2.0
 
 * bumped gradle version to 6.7
 * bumped gradle plugin version to 4.1.0
 * bumped kotlin plugin version to 1.4.32
 * bumped compile sdk version to 31
+
+
+## 0.1.0 - Initial release
+
+* iOS Support and Android Support.
