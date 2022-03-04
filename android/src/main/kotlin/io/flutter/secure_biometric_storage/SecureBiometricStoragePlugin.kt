@@ -361,14 +361,27 @@ class SecureBiometricStoragePlugin : FlutterPlugin, ActivityAware, MethodCallHan
     ) {
         logger.trace("authenticate()")
         val activity = attachedActivity ?: return run {
-            logger.error { "We are not attached to an activity." }
+            logger.error { "Plugin is not attached to an activity." }
             onError(
                 AuthenticationErrorInfo(
                     AuthenticationError.Failed,
-                    "Plugin not attached to any activity."
+                    "Plugin is not attached to any activity."
                 )
             )
         }
+
+        // checking lifecycle state, see: https://stackoverflow.com/questions/56358422/java-lang-illegalstateexception-error-in-biometricprompt-authenticate
+        val lifecycleState = activity.lifecycle.currentState
+        if (lifecycleState != Lifecycle.State.RESUMED) {
+            logger.error { "Wrong lifecycle state" }
+            onError(
+                    AuthenticationErrorInfo(
+                            AuthenticationError.Failed,
+                            "Wrong lifecycle state"
+                    )
+            )
+        }
+
         val prompt =
             BiometricPrompt(activity, executor, object : BiometricPrompt.AuthenticationCallback() {
                 override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
