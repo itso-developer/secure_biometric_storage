@@ -1,7 +1,7 @@
 ## 0.2.1
 
 * added lifecycleState check in Android
-* added lockout and lockoutPermanent error types
+* added lockout and lockoutPermanent error types (only works on Android)
 
 ## 0.2.0
 
