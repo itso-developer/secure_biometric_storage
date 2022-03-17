@@ -214,7 +214,7 @@ class SecureBiometricStorageImpl {
         let spec: NSDictionary = [kSecAttrService as String: serviceStorageName,
                                   kSecClass as String: kSecClassGenericPassword,]
         let status = SecItemDelete(spec)
-        if (status == errSecSuccess) {
+        if (status == errSecSuccess || status == errSecItemNotFound) {
             for key in UserDefaults.standard.dictionaryRepresentation().keys {
                 if key.hasPrefix(domainStatePrefix) {
                     UserDefaults.standard.removeObject(forKey: key)
