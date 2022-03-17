@@ -2,9 +2,9 @@ name: secure_biometric_storage
 description: |
   Secure Storage: Encrypted data store optionally secured by biometric lock with support
   for iOS and Android.
-version: 0.2.1
+version: 0.2.2
 homepage: https://github.com/itso-developer/secure_biometric_storage
-publish_to: 'none'
+
 
 environment:
   sdk: ">=2.7.0 <3.0.0"

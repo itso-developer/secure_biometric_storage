@@ -1,3 +1,7 @@
+## 0.2.2
+
+* added `errSecItemNotFound` case for data deletion on iOS
+
 ## 0.2.1
 
 * added lifecycleState check in Android
