@@ -51,7 +51,7 @@ const _authErrorCodeMapping = {
   'AuthError:UserCanceled': AuthExceptionCode.userCanceled,
   'AuthError:Timeout': AuthExceptionCode.timeout,
   'AuthError:KeyPermanentlyInvalidated':
-  AuthExceptionCode.keyPermanentlyInvalidated,
+      AuthExceptionCode.keyPermanentlyInvalidated,
   'AuthError:Lockout': AuthExceptionCode.lockoutPermanent,
   'AuthError:LockoutPermanent': AuthExceptionCode.lockoutPermanent,
 };
@@ -92,8 +92,8 @@ class StorageFileInitOptions {
   final bool authenticationRequired;
 
   Map<String, dynamic> toJson() => <String, dynamic>{
-    'authenticationRequired': authenticationRequired,
-  };
+        'authenticationRequired': authenticationRequired,
+      };
 }
 
 /// Android specific configuration of the prompt displayed for biometry.
@@ -115,12 +115,12 @@ class AndroidPromptInfo {
   static const defaultValues = AndroidPromptInfo();
 
   Map<String, dynamic> _toJson() => <String, dynamic>{
-    'title': title,
-    'subtitle': subtitle,
-    'description': description,
-    'negativeButton': negativeButton,
-    'confirmationRequired': confirmationRequired,
-  };
+        'title': title,
+        'subtitle': subtitle,
+        'description': description,
+        'negativeButton': negativeButton,
+        'confirmationRequired': confirmationRequired,
+      };
 }
 
 /// Types of biometric hardware
@@ -152,7 +152,7 @@ abstract class SecureBiometricStorage extends PlatformInterface {
   SecureBiometricStorage.create() : super(token: _token);
 
   static SecureBiometricStorage _instance =
-  MethodChannelSecureBiometricStorage();
+      MethodChannelSecureBiometricStorage();
 
   /// Platform-specific plugins should set this with their own platform-specific
   /// class that extends [SecureBiometricStorage] when they register themselves.
@@ -178,11 +178,11 @@ abstract class SecureBiometricStorage extends PlatformInterface {
   /// if [forceInit] is true, will throw an exception if the store was already
   /// created in this runtime.
   Future<SecureBiometricStorageFile> getStorage(
-      String name, {
-        StorageFileInitOptions options,
-        bool forceInit = false,
-        AndroidPromptInfo androidPromptInfo = AndroidPromptInfo.defaultValues,
-      });
+    String name, {
+    StorageFileInitOptions options,
+    bool forceInit = false,
+    AndroidPromptInfo androidPromptInfo = AndroidPromptInfo.defaultValues,
+  });
 
   /// returns true if and only if files are
   /// successfully deleted; false otherwise
@@ -190,31 +190,31 @@ abstract class SecureBiometricStorage extends PlatformInterface {
 
   @protected
   Future<String?> read(
-      String name,
-      AndroidPromptInfo androidPromptInfo,
-      );
+    String name,
+    AndroidPromptInfo androidPromptInfo,
+  );
 
   /// returns true if and only if the file is
   /// successfully deleted; false otherwise
   @protected
   Future<bool?> delete(
-      String name,
-      AndroidPromptInfo androidPromptInfo,
-      );
+    String name,
+    AndroidPromptInfo androidPromptInfo,
+  );
 
   @protected
   Future<void> write(
-      String name,
-      String content,
-      AndroidPromptInfo androidPromptInfo,
-      );
+    String name,
+    String content,
+    AndroidPromptInfo androidPromptInfo,
+  );
 }
 
 class MethodChannelSecureBiometricStorage extends SecureBiometricStorage {
   MethodChannelSecureBiometricStorage() : super.create();
 
   static const MethodChannel _channel =
-  MethodChannel('secure_biometric_storage');
+      MethodChannel('secure_biometric_storage');
 
   @override
   Future<CanAuthenticateResponse> canAuthenticate() async {
@@ -233,13 +233,13 @@ class MethodChannelSecureBiometricStorage extends SecureBiometricStorage {
   Future<List<BiometricType>> getAvailableBiometrics() async {
     if (Platform.isAndroid || Platform.isIOS) {
       final results =
-      await _channel.invokeMethod<List<Object?>>('getAvailableBiometrics');
+          await _channel.invokeMethod<List<Object?>>('getAvailableBiometrics');
       if (results == null) {
         throw StateError('Invalid response from native platform. {$results}');
       }
       return results
           .map((typeName) =>
-      _biometricTypeMapping[typeName] ?? BiometricType.unknown)
+              _biometricTypeMapping[typeName] ?? BiometricType.unknown)
           .toList();
     } else {
       throw UnimplementedError();
@@ -253,11 +253,11 @@ class MethodChannelSecureBiometricStorage extends SecureBiometricStorage {
   /// created in this runtime.
   @override
   Future<SecureBiometricStorageFile> getStorage(
-      String name, {
-        StorageFileInitOptions? options,
-        bool forceInit = false,
-        AndroidPromptInfo androidPromptInfo = AndroidPromptInfo.defaultValues,
-      }) async {
+    String name, {
+    StorageFileInitOptions? options,
+    bool forceInit = false,
+    AndroidPromptInfo androidPromptInfo = AndroidPromptInfo.defaultValues,
+  }) async {
     try {
       final result = await _channel.invokeMethod<bool>(
         'init',
@@ -282,9 +282,9 @@ class MethodChannelSecureBiometricStorage extends SecureBiometricStorage {
 
   @override
   Future<String?> read(
-      String name,
-      AndroidPromptInfo androidPromptInfo,
-      ) =>
+    String name,
+    AndroidPromptInfo androidPromptInfo,
+  ) =>
       _transformErrors(_channel.invokeMethod<String>('read', <String, dynamic>{
         'name': name,
         ..._androidPromptInfoOnlyOnAndroid(androidPromptInfo),
@@ -292,9 +292,9 @@ class MethodChannelSecureBiometricStorage extends SecureBiometricStorage {
 
   @override
   Future<bool?> delete(
-      String name,
-      AndroidPromptInfo androidPromptInfo,
-      ) =>
+    String name,
+    AndroidPromptInfo androidPromptInfo,
+  ) =>
       _transformErrors(_channel.invokeMethod<bool>('delete', <String, dynamic>{
         'name': name,
         ..._androidPromptInfoOnlyOnAndroid(androidPromptInfo),
@@ -306,10 +306,10 @@ class MethodChannelSecureBiometricStorage extends SecureBiometricStorage {
 
   @override
   Future<void> write(
-      String name,
-      String content,
-      AndroidPromptInfo androidPromptInfo,
-      ) =>
+    String name,
+    String content,
+    AndroidPromptInfo androidPromptInfo,
+  ) =>
       _transformErrors(_channel.invokeMethod('write', <String, dynamic>{
         'name': name,
         'content': content,

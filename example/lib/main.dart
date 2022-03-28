@@ -32,7 +32,7 @@ class ShortFormatter extends LogRecordFormatter {
   StringBuffer formatToStringBuffer(LogRecord rec, StringBuffer sb) {
     sb.write(
         '${rec.time.hour}:${rec.time.minute}:${rec.time.second} ${rec.level.name} '
-            '${rec.message}');
+        '${rec.message}');
 
     if (rec.error != null) {
       sb.write(rec.error);
@@ -72,7 +72,7 @@ class _MyAppState extends State<MyApp> {
   List<BiometricType>? _availableBiometrics;
 
   final TextEditingController _writeController =
-  TextEditingController(text: 'Lorem Ipsum');
+      TextEditingController(text: 'Lorem Ipsum');
 
   @override
   void initState() {
@@ -127,7 +127,7 @@ class _MyAppState extends State<MyApp> {
             ElevatedButton(
               onPressed: () async {
                 final availableBiometrics =
-                await SecureBiometricStorage().getAvailableBiometrics();
+                    await SecureBiometricStorage().getAvailableBiometrics();
                 setState(() {
                   _availableBiometrics = availableBiometrics;
                 });
@@ -137,17 +137,17 @@ class _MyAppState extends State<MyApp> {
             ...?(_availableBiometrics == null
                 ? null
                 : [
-              const Text('Available Hardware',
-                  style: TextStyle(fontWeight: FontWeight.bold)),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: <Widget>[
-                  ..._availableBiometrics!
-                      .map((e) => _mapBiometricType(e))
-                      .toList()
-                ],
-              ),
-            ]),
+                    const Text('Available Hardware',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: <Widget>[
+                        ..._availableBiometrics!
+                            .map((e) => _mapBiometricType(e))
+                            .toList()
+                      ],
+                    ),
+                  ]),
             const Divider(),
             ElevatedButton(
               child: const Text('init'),
@@ -169,18 +169,18 @@ class _MyAppState extends State<MyApp> {
                   _authStorage = await SecureBiometricStorage().getStorage(
                       '${baseName}_authenticated',
                       options:
-                      StorageFileInitOptions(authenticationRequired: true));
+                          StorageFileInitOptions(authenticationRequired: true));
                 }
                 _storage = await SecureBiometricStorage()
                     .getStorage('${baseName}_unauthenticated',
-                    options: StorageFileInitOptions(
-                      authenticationRequired: false,
-                    ));
+                        options: StorageFileInitOptions(
+                          authenticationRequired: false,
+                        ));
                 if (supportsAuthenticated) {
                   _customPrompt = await SecureBiometricStorage().getStorage(
                       '${baseName}_customPrompt',
                       options:
-                      StorageFileInitOptions(authenticationRequired: true),
+                          StorageFileInitOptions(authenticationRequired: true),
                       androidPromptInfo: const AndroidPromptInfo(
                         title: 'Custom title',
                         subtitle: 'Custom subtitle',
@@ -190,7 +190,7 @@ class _MyAppState extends State<MyApp> {
                   _noConfirmation = await SecureBiometricStorage().getStorage(
                       '${baseName}_customPrompt',
                       options:
-                      StorageFileInitOptions(authenticationRequired: true),
+                          StorageFileInitOptions(authenticationRequired: true),
                       androidPromptInfo: const AndroidPromptInfo(
                         confirmationRequired: false,
                       ));
@@ -202,42 +202,42 @@ class _MyAppState extends State<MyApp> {
             ...(_authStorage == null
                 ? []
                 : [
-              const Text('Biometric Authentication',
-                  style: TextStyle(fontWeight: FontWeight.bold)),
-              StorageActions(
-                  storageFile: _authStorage!,
-                  writeController: _writeController),
-              const Divider(),
-            ]),
+                    const Text('Biometric Authentication',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    StorageActions(
+                        storageFile: _authStorage!,
+                        writeController: _writeController),
+                    const Divider(),
+                  ]),
             ...?(_storage == null
                 ? null
                 : [
-              const Text('Unauthenticated',
-                  style: TextStyle(fontWeight: FontWeight.bold)),
-              StorageActions(
-                  storageFile: _storage!,
-                  writeController: _writeController),
-              const Divider(),
-            ]),
+                    const Text('Unauthenticated',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    StorageActions(
+                        storageFile: _storage!,
+                        writeController: _writeController),
+                    const Divider(),
+                  ]),
             ...?(_customPrompt == null
                 ? null
                 : [
-              const Text('Custom Authentication Prompt (Android)',
-                  style: TextStyle(fontWeight: FontWeight.bold)),
-              StorageActions(
-                  storageFile: _customPrompt!,
-                  writeController: _writeController),
-              const Divider(),
-            ]),
+                    const Text('Custom Authentication Prompt (Android)',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    StorageActions(
+                        storageFile: _customPrompt!,
+                        writeController: _writeController),
+                    const Divider(),
+                  ]),
             ...?(_noConfirmation == null
                 ? null
                 : [
-              const Text('No Confirmation Prompt (Android)',
-                  style: TextStyle(fontWeight: FontWeight.bold)),
-              StorageActions(
-                  storageFile: _noConfirmation!,
-                  writeController: _writeController),
-            ]),
+                    const Text('No Confirmation Prompt (Android)',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    StorageActions(
+                        storageFile: _noConfirmation!,
+                        writeController: _writeController),
+                  ]),
             const Divider(),
             ElevatedButton(
               child: const Text('deleteAll'),
