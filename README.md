@@ -1,5 +1,7 @@
 # secure_biometric_storage
 
+[![pub package](https://img.shields.io/pub/v/secure_biometric_storage.svg)](https://pub.dev/packages/secure_biometric_storage) 
+
 Fork of [biometric_storage](https://pub.dev/packages/biometric_storage) with focus on security
 
 
