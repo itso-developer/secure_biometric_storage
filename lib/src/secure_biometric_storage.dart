@@ -50,7 +50,8 @@ enum AuthExceptionCode {
 const _authErrorCodeMapping = {
   'AuthError:UserCanceled': AuthExceptionCode.userCanceled,
   'AuthError:Timeout': AuthExceptionCode.timeout,
-  'AuthError:KeyPermanentlyInvalidated': AuthExceptionCode.keyPermanentlyInvalidated,
+  'AuthError:KeyPermanentlyInvalidated':
+      AuthExceptionCode.keyPermanentlyInvalidated,
   'AuthError:Lockout': AuthExceptionCode.lockoutPermanent,
   'AuthError:LockoutPermanent': AuthExceptionCode.lockoutPermanent,
 };
@@ -103,13 +104,11 @@ class AndroidPromptInfo {
     this.description,
     this.negativeButton = 'Cancel',
     this.confirmationRequired = true,
-  })  : assert(title != null),
-        assert(negativeButton != null),
-        assert(confirmationRequired != null);
+  });
 
   final String title;
-  final String subtitle;
-  final String description;
+  final String? subtitle;
+  final String? description;
   final String negativeButton;
   final bool confirmationRequired;
 
@@ -152,7 +151,8 @@ abstract class SecureBiometricStorage extends PlatformInterface {
 
   SecureBiometricStorage.create() : super(token: _token);
 
-  static SecureBiometricStorage _instance = MethodChannelSecureBiometricStorage();
+  static SecureBiometricStorage _instance =
+      MethodChannelSecureBiometricStorage();
 
   /// Platform-specific plugins should set this with their own platform-specific
   /// class that extends [SecureBiometricStorage] when they register themselves.
@@ -189,7 +189,7 @@ abstract class SecureBiometricStorage extends PlatformInterface {
   Future<void> deleteAll();
 
   @protected
-  Future<String> read(
+  Future<String?> read(
     String name,
     AndroidPromptInfo androidPromptInfo,
   );
@@ -197,7 +197,7 @@ abstract class SecureBiometricStorage extends PlatformInterface {
   /// returns true if and only if the file is
   /// successfully deleted; false otherwise
   @protected
-  Future<bool> delete(
+  Future<bool?> delete(
     String name,
     AndroidPromptInfo androidPromptInfo,
   );
@@ -213,12 +213,18 @@ abstract class SecureBiometricStorage extends PlatformInterface {
 class MethodChannelSecureBiometricStorage extends SecureBiometricStorage {
   MethodChannelSecureBiometricStorage() : super.create();
 
-  static const MethodChannel _channel = MethodChannel('secure_biometric_storage');
+  static const MethodChannel _channel =
+      MethodChannel('secure_biometric_storage');
 
   @override
   Future<CanAuthenticateResponse> canAuthenticate() async {
     if (Platform.isAndroid || Platform.isIOS) {
-      return _canAuthenticateMapping[await _channel.invokeMethod<String>('canAuthenticate')];
+      final response = await _channel.invokeMethod<String>('canAuthenticate');
+      final ret = _canAuthenticateMapping[response];
+      if (ret == null) {
+        throw StateError('Invalid response from native platform. {$response}');
+      }
+      return ret;
     }
     return CanAuthenticateResponse.unsupported;
   }
@@ -226,8 +232,15 @@ class MethodChannelSecureBiometricStorage extends SecureBiometricStorage {
   @override
   Future<List<BiometricType>> getAvailableBiometrics() async {
     if (Platform.isAndroid || Platform.isIOS) {
-      final results = await _channel.invokeMethod<List<Object>>('getAvailableBiometrics');
-      return results.map((typeName) => _biometricTypeMapping[typeName] ?? BiometricType.unknown).toList();
+      final results =
+          await _channel.invokeMethod<List<Object?>>('getAvailableBiometrics');
+      if (results == null) {
+        throw StateError('Invalid response from native platform. {$results}');
+      }
+      return results
+          .map((typeName) =>
+              _biometricTypeMapping[typeName] ?? BiometricType.unknown)
+          .toList();
     } else {
       throw UnimplementedError();
     }
@@ -241,11 +254,10 @@ class MethodChannelSecureBiometricStorage extends SecureBiometricStorage {
   @override
   Future<SecureBiometricStorageFile> getStorage(
     String name, {
-    StorageFileInitOptions options,
+    StorageFileInitOptions? options,
     bool forceInit = false,
     AndroidPromptInfo androidPromptInfo = AndroidPromptInfo.defaultValues,
   }) async {
-    assert(name != null);
     try {
       final result = await _channel.invokeMethod<bool>(
         'init',
@@ -262,13 +274,14 @@ class MethodChannelSecureBiometricStorage extends SecureBiometricStorage {
         androidPromptInfo,
       );
     } catch (e, stackTrace) {
-      _logger.warning('Error while initializing biometric storage.', e, stackTrace);
+      _logger.warning(
+          'Error while initializing biometric storage.', e, stackTrace);
       rethrow;
     }
   }
 
   @override
-  Future<String> read(
+  Future<String?> read(
     String name,
     AndroidPromptInfo androidPromptInfo,
   ) =>
@@ -278,7 +291,7 @@ class MethodChannelSecureBiometricStorage extends SecureBiometricStorage {
       }));
 
   @override
-  Future<bool> delete(
+  Future<bool?> delete(
     String name,
     AndroidPromptInfo androidPromptInfo,
   ) =>
@@ -288,7 +301,8 @@ class MethodChannelSecureBiometricStorage extends SecureBiometricStorage {
       }));
 
   @override
-  Future<void> deleteAll() => _transformErrors(_channel.invokeMethod<bool>('deleteAll', <String, dynamic>{}));
+  Future<void> deleteAll() => _transformErrors(
+      _channel.invokeMethod<bool>('deleteAll', <String, dynamic>{}));
 
   @override
   Future<void> write(
@@ -302,19 +316,26 @@ class MethodChannelSecureBiometricStorage extends SecureBiometricStorage {
         ..._androidPromptInfoOnlyOnAndroid(androidPromptInfo),
       }));
 
-  Map<String, dynamic> _androidPromptInfoOnlyOnAndroid(AndroidPromptInfo promptInfo) {
+  Map<String, dynamic> _androidPromptInfoOnlyOnAndroid(
+      AndroidPromptInfo promptInfo) {
     // Don't expose Android configurations to other platforms
-    return Platform.isAndroid ? <String, dynamic>{'androidPromptInfo': promptInfo._toJson()} : <String, dynamic>{};
+    return Platform.isAndroid
+        ? <String, dynamic>{'androidPromptInfo': promptInfo._toJson()}
+        : <String, dynamic>{};
   }
 
-  Future<T> _transformErrors<T>(Future<T> future) => future.catchError((dynamic error, StackTrace stackTrace) {
-        _logger.warning('Error during plugin operation (details: ${error.details})', error, stackTrace);
+  Future<T> _transformErrors<T>(Future<T> future) =>
+      future.catchError((Object error, StackTrace stackTrace) {
         if (error is PlatformException) {
+          _logger.warning(
+              'Error during plugin operation (details: ${error.details})',
+              error,
+              stackTrace);
           if (error.code.startsWith('AuthError:')) {
             return Future<T>.error(
               AuthException(
                 _authErrorCodeMapping[error.code] ?? AuthExceptionCode.unknown,
-                error.message,
+                error.message ?? 'Unknown error',
               ),
               stackTrace,
             );
@@ -333,10 +354,11 @@ class SecureBiometricStorageFile {
 
   /// read from the secure file and returns the content.
   /// Will return `null` if file does not exist.
-  Future<String> read() => _plugin.read(name, androidPromptInfo);
+  Future<String?> read() => _plugin.read(name, androidPromptInfo);
 
   /// Write content of this file. Previous value will be overwritten.
-  Future<void> write(String content) => _plugin.write(name, content, androidPromptInfo);
+  Future<void> write(String content) =>
+      _plugin.write(name, content, androidPromptInfo);
 
   /// Delete the content of this storage.
   Future<void> delete() => _plugin.delete(name, androidPromptInfo);

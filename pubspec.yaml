@@ -7,15 +7,15 @@ homepage: https://github.com/itso-developer/secure_biometric_storage
 
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
-  flutter: ">=1.10.0"
+  sdk: '>=2.12.0 <3.0.0'
+  flutter: ">=2.8.0"
 
 dependencies:
   flutter:
     sdk: flutter
   flutter_web_plugins:
     sdk: flutter
-  logging: ^1.0.0
+  logging: ">=1.0.0 <2.0.0"
   plugin_platform_interface: ^2.0.0
 
 
