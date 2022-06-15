@@ -1,3 +1,12 @@
+## 0.3.0-nullsafety.0
+
+* null safety
+* bumped kotlin version to 1.6.10
+* bumped gradle version to 7.1.1
+* updated lower dart-sdk constraint to 2.12.0
+* updated lower flutter-sdk constraint to 2.8.0
+* fixed nullable `Activity` in kotlin part for flutter > 3.x.x
+
 ## 0.2.2
 
 * added `errSecItemNotFound` case for data deletion on iOS
