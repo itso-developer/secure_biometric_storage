@@ -457,7 +457,7 @@ class SecureBiometricStoragePlugin : FlutterPlugin, ActivityAware, MethodCallHan
         updateAttachedActivity(binding.activity)
     }
 
-    private fun updateAttachedActivity(activity: Activity) {
+    private fun updateAttachedActivity(activity: Activity?) {
         if (activity !is FragmentActivity) {
             logger.error { "Got attached to activity which is not a FragmentActivity: $activity" }
             return
