@@ -45,6 +45,13 @@ class SecureBiometricStorageFile(
         private const val FILE_SUFFIX = ".txt"
         private const val BACKUP_SUFFIX = "bak"
         private const val KEYSTORE_PROVIDER_ANDROID = "AndroidKeyStore"
+        fun getBaseDir(context: Context): File {
+            val baseDir = File(context.noBackupFilesDir, DIRECTORY_NAME)
+            if (!baseDir.exists()) {
+                baseDir.mkdirs()
+            }
+            return baseDir
+        }
     }
 
     private val secretKeyName = "${baseName}_secret_key"
@@ -53,11 +60,8 @@ class SecureBiometricStorageFile(
 
 
     init {
+        val baseDir = getBaseDir(context)
 
-        val baseDir = File(context.noBackupFilesDir, DIRECTORY_NAME)
-        if (!baseDir.exists()) {
-            baseDir.mkdirs()
-        }
         file = File(baseDir, fileName)
 
         logger.trace { "Initialized $this with $options" }

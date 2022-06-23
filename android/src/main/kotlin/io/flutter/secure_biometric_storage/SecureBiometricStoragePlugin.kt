@@ -251,8 +251,8 @@ class SecureBiometricStoragePlugin : FlutterPlugin, ActivityAware, MethodCallHan
                     result.success(deleteFile())
                 }
                 "deleteAll" -> {
-                    for (file in storageFiles.values) {
-                        file.deleteFile()
+                    for (file in SecureBiometricStorageFile.getBaseDir(applicationContext).listFiles()!!) {
+                        file.delete()
                     }
                     storageFiles.clear()
                     result.success(true)
