@@ -17,9 +17,6 @@ import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
 import androidx.biometric.BiometricPrompt
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
-import com.squareup.moshi.JsonClass
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -121,10 +118,7 @@ class SecureBiometricStoragePlugin : FlutterPlugin, ActivityAware, MethodCallHan
         const val PARAM_NAME = "name"
         const val PARAM_WRITE_CONTENT = "content"
         const val PARAM_ANDROID_PROMPT_INFO = "androidPromptInfo"
-
-        val moshi = Moshi.Builder()
-            .addLast(KotlinJsonAdapterFactory())
-            .build() as Moshi
+        const val PARAM_OPTIONS = "options"
 
         val executor: ExecutorService = Executors.newSingleThreadExecutor()
         private val handler: Handler = Handler(Looper.getMainLooper())
@@ -165,11 +159,13 @@ class SecureBiometricStoragePlugin : FlutterPlugin, ActivityAware, MethodCallHan
             val getName = { requiredArgument<String>(PARAM_NAME) }
             val getAndroidPromptInfo = {
                 requiredArgument<Map<String, Any>>(PARAM_ANDROID_PROMPT_INFO).let {
-                    moshi.adapter(AndroidPromptInfo::class.java).fromJsonValue(it)
-                        ?: throw MethodCallException(
-                            "BadArgument",
-                            "'$PARAM_ANDROID_PROMPT_INFO' is not well formed"
-                        )
+                            AndroidPromptInfo(
+                                    title = it["title"] as String,
+                                    subtitle = it["subtitle"] as String?,
+                                    description = it["description"] as String?,
+                                    negativeButton = it["negativeButton"] as String,
+                                    confirmationRequired = it["confirmationRequired"] as Boolean
+                            )
                 }
             }
 
@@ -225,9 +221,11 @@ class SecureBiometricStoragePlugin : FlutterPlugin, ActivityAware, MethodCallHan
                         }
                     }
 
-                    val options = moshi.adapter(InitOptions::class.java)
-                        .fromJsonValue(call.argument("options") ?: emptyMap<String, Any>())
-                        ?: InitOptions()
+                    val options =  requiredArgument<Map<String, Any>>(PARAM_OPTIONS).let {
+                        InitOptions(
+                                authenticationRequired = it["authenticationRequired"] as Boolean
+                        )
+                    }
                     storageFiles[name] =
                         SecureBiometricStorageFile(applicationContext, name, options)
                     result.success(true)
@@ -336,12 +334,11 @@ class SecureBiometricStoragePlugin : FlutterPlugin, ActivityAware, MethodCallHan
     private fun getAvailableBiometrics(activity: FragmentActivity): ArrayList<String> {
         val biometrics: ArrayList<String> = ArrayList()
         val packageManager: PackageManager = activity.packageManager
-        if (Build.VERSION.SDK_INT >= 23) {
-            if (packageManager.hasSystemFeature(PackageManager.FEATURE_FINGERPRINT)) {
-                biometrics.add("fingerprint")
-            }
+        if (packageManager.hasSystemFeature(PackageManager.FEATURE_FINGERPRINT)) {
+            biometrics.add("fingerprint")
         }
-        if (Build.VERSION.SDK_INT >= 29) {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             if (packageManager.hasSystemFeature(PackageManager.FEATURE_FACE)) {
                 biometrics.add("face")
             }
@@ -469,7 +466,6 @@ class SecureBiometricStoragePlugin : FlutterPlugin, ActivityAware, MethodCallHan
     }
 }
 
-@JsonClass(generateAdapter = true)
 data class AndroidPromptInfo(
     val title: String,
     val subtitle: String?,

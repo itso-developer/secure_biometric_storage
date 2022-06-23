@@ -48,6 +48,4 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation "androidx.biometric:biometric:$biometric_version"
     implementation 'io.github.microutils:kotlin-logging-jvm:2.0.8'
-    implementation "com.squareup.moshi:moshi-kotlin:1.13.0"
-    kapt("com.squareup.moshi:moshi-kotlin-codegen:1.13.0")
 }

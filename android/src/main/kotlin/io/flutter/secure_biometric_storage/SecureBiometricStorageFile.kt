@@ -10,7 +10,6 @@ import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import androidx.biometric.BiometricPrompt
-import com.squareup.moshi.JsonClass
 import mu.KotlinLogging
 import java.io.File
 import java.io.FileInputStream
@@ -25,9 +24,7 @@ import javax.crypto.spec.IvParameterSpec
 
 private val logger = KotlinLogging.logger {}
 
-@JsonClass(generateAdapter = true)
 data class InitOptions(
-        val authenticationValidityDurationSeconds: Int = 30,
         val authenticationRequired: Boolean = true
 )
 
