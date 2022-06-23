@@ -1,3 +1,7 @@
+## 0.3.0-nullsafety.1
+
+* fixed `deleteAll()` for Android part. Previously, it deleted only initialized files.
+
 ## 0.3.0-nullsafety.0
 
 * null safety
